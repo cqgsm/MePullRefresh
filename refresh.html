@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: lightgoldenrodyellow;
+            /* -webkit-overflow-scrolling: touch; */
+        }
+
+        .container {
+            width: 300px;
+            height: 500px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            box-sizing: border-box;
+            border: 10px solid lawngreen;
+            overflow: scroll;
+            -webkit-overflow-scrolling: touch;
+            background: #fff;
+            /* touch-action: none; */
+        }
+
+        .li {
+            height: 40px;
+            line-height: 40px;
+            padding-left: 30px;
+        }
+
+        .pullRefresh-loading,
+        .bottom {
+            height: 50px;
+            background: rgb(255, 168, 183);
+            line-height: 50px;
+            text-align: center;
+            margin-top: -50px;
+        }
+
+        .bottom {
+            margin-top: 0;
+        }
+
+
+        .transitioning {
+            -webkit-transition-duration: 300ms;
+            transition-duration: 300ms;
+            -webkit-transition-property: -webkit-transform;
+            transition-property: -webkit-transform;
+            transition-property: transform;
+            transition-property: transform, -webkit-transform;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="wrapper">
+            <div class="pullRefresh-loading">
+                <p>下拉刷新</p>
+            </div>
+            <ul id="content">
+
+            </ul>
+            <div class="bottom">
+                <p>底部加载更多</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="./mePullRefresh.js?v=jusfsdfj"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (ev) => {
+
+            let container = document.querySelector('.container');
+            let content = document.getElementById('content');
+            let wrapper = document.querySelector('.wrapper');
+            let loading = document.querySelector('.pullRefresh-loading p');
+            let bottom = document.querySelector('.bottom p');
+
+            let str = '';
+            for (let i = 0; i < 15; i++) {
+                str += `<li class="li"><a href="https://www.baidu.com">${i}</a></li>`
+            }
+            content.innerHTML = str;
+
+
+            var dom = new MePullRefresh({
+                el: container,
+                classNames: 'transitioning',
+                usePtr: true,
+                ptrStartFn: function () {
+                    loading.innerHTML = '开始下拉了';
+                },
+                ptrMoveFn(args) {
+                    // console.log(args)
+                },
+                ptrWillRefreshFn: function () {
+                    loading.innerHTML = '松开就去获取数据了';
+                },
+                ptrRefreshFn: function () {
+                    loading.innerHTML = '获取数据中。。。。';
+                    setTimeout(() => {
+                        loading.innerHTML = '获取数据成功';
+                        this.ptrDone();
+                    }, 2000)
+                },
+                ptrEndFn: function () {
+                    console.log('end')
+                },
+
+
+                infiniteStartFn: function () {
+                    console.log('开始滚动');
+
+                },
+                infiniteMoveFn: function () {
+                    console.log('滚动中');
+                },
+                infiniteEndFn: function () {
+                    console.log('滚动结束');
+                    setTimeout(() => {
+                        bottom.innerHTML = '没有更多了'
+                        this.infiniteDone();
+                    }, 6000);
+                }
+            });
+
+            console.log(bottom);
+        }, false)
+    </script>
+</body>
+
+</html>
